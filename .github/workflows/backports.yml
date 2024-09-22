@@ -1,0 +1,58 @@
+name: Create backports
+
+on:
+  workflow_dispatch:
+    inputs:
+      kernel_version:
+        description: 'Select kernel version'
+        required: true
+        default: '6.11'
+        type: string
+
+jobs:
+  create_tar:
+    name: Create backports
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install coccinelle
+        run: |
+          sudo apt update
+          sudo apt install -y coccinelle
+
+      - name: Checkout backports
+        uses: actions/checkout@v4
+        with:
+          path: backports
+
+      - name: Checkout kernel
+        uses: actions/checkout@v4
+        with:
+          repository: gregkh/linux
+          ref: v${{ github.event.inputs.kernel_version }}
+          path: linux
+
+      - name: Generate backports tar
+        working-directory: backports
+        run: ./gentree.py --refresh  ${GITHUB_WORKSPACE}/linux ${GITHUB_WORKSPACE}/backports-${{ github.event.inputs.kernel_version }}
+
+      - name: Check for git changes
+        working-directory: backports
+        run: git diff
+
+      - name: Pack backports
+        run: |
+             tar -c backports-${{ github.event.inputs.kernel_version }} | xz > backports-${{ github.event.inputs.kernel_version }}.tar.xz
+             sha256sum backports-${{ github.event.inputs.kernel_version }}.tar.xz > backports-${{ github.event.inputs.kernel_version }}.tar.xz.sha256
+
+      - name: Release build artifacts
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          allowUpdates: true
+          prerelease: false
+          name: backports v${{ github.event.inputs.kernel_version }}
+          tag: v6.11
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: |
+                    backports-${{ github.event.inputs.kernel_version }}.tar.xz
+                    backports-${{ github.event.inputs.kernel_version }}.tar.xz.sha256
