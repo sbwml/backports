@@ -7,7 +7,7 @@ kernel versions.
 
 --- a/include/net/mac80211.h
 +++ b/include/net/mac80211.h
-@@ -1218,7 +1218,11 @@ struct ieee80211_tx_status {
+@@ -1219,7 +1219,11 @@ struct ieee80211_tx_status {
  	ktime_t ack_hwtstamp;
  	u8 n_rates;
  
