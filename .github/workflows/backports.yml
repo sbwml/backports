@@ -29,8 +29,13 @@ jobs:
         run: |
           git config --global user.name 'actions'
           git config --global user.email 'action@github.com'
-          wget -q https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${{ github.event.inputs.kernel_version }}.tar.xz
-          tar xf linux-${{ github.event.inputs.kernel_version }}.tar.xz && rm -rf linux-${{ github.event.inputs.kernel_version }}.tar.xz
+          if [[ "${{ github.event.inputs.kernel_version }}" =~ "rc" ]]; then
+            wget -q https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-${{ github.event.inputs.kernel_version }}.tar.gz
+            tar xf linux-${{ github.event.inputs.kernel_version }}.tar.gz && rm -rf linux-${{ github.event.inputs.kernel_version }}.tar.gz
+          else
+            wget -q https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${{ github.event.inputs.kernel_version }}.tar.xz
+            tar xf linux-${{ github.event.inputs.kernel_version }}.tar.xz && rm -rf linux-${{ github.event.inputs.kernel_version }}.tar.xz
+          fi
           mv linux-${{ github.event.inputs.kernel_version }} linux
           git -C linux init
           git -C linux add .
