@@ -6,13 +6,13 @@ on:
       kernel_version:
         description: 'Select kernel v6.x version'
         required: true
-        default: '6.12'
+        default: '6.13'
         type: string
 
 jobs:
   create_tar:
     name: Create backports
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Install coccinelle
