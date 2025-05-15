@@ -1,0 +1,24 @@
+--- a/drivers/net/wireless/intersil/p54/p54spi.c
++++ b/drivers/net/wireless/intersil/p54/p54spi.c
+@@ -623,13 +623,21 @@ static int p54spi_probe(struct spi_devic
+ 	gpio_direction_input(p54spi_gpio_irq);
+ 
+ 	ret = request_irq(gpio_to_irq(p54spi_gpio_irq),
++#ifndef IRQF_NO_AUTOEN
++			  p54spi_interrupt, 0, "p54spi",
++#else
+ 			  p54spi_interrupt, IRQF_NO_AUTOEN, "p54spi",
++#endif
+ 			  priv->spi);
+ 	if (ret < 0) {
+ 		dev_err(&priv->spi->dev, "request_irq() failed");
+ 		goto err_free_gpio_irq;
+ 	}
+ 
++#ifndef IRQF_NO_AUTOEN
++	disable_irq(gpio_to_irq(p54spi_gpio_irq));
++#endif
++
+ 	irq_set_irq_type(gpio_to_irq(p54spi_gpio_irq), IRQ_TYPE_EDGE_RISING);
+ 
+ 	INIT_WORK(&priv->work, p54spi_work);
