@@ -1,16 +1,16 @@
 --- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
 +++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-@@ -3785,6 +3785,9 @@ struct iwl_trans *iwl_trans_pcie_alloc(s
+@@ -3793,6 +3793,9 @@ iwl_trans_pcie_alloc(struct pci_dev *pde
  {
  	struct iwl_trans_pcie *trans_pcie, **priv;
  	struct iwl_trans *trans;
 +#if LINUX_VERSION_IS_LESS(6,13,0)
 +	void __iomem * const *table;
 +#endif
+ 	unsigned int bc_tbl_n_entries;
  	int ret, addr_size;
  	u32 bar0;
- 
-@@ -3911,13 +3914,23 @@ struct iwl_trans *iwl_trans_pcie_alloc(s
+@@ -3926,13 +3929,23 @@ iwl_trans_pcie_alloc(struct pci_dev *pde
  		}
  	}
  
