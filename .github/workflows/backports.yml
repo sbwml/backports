@@ -6,7 +6,7 @@ on:
       kernel_version:
         description: 'Select kernel v6.x version'
         required: true
-        default: '6.12'
+        default: '6.18'
         type: string
 
 jobs:
